@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class Order {
-    float priceSell;
 
-    float quantity;
+    double priceSell;
+
+    double quantity;
 }
