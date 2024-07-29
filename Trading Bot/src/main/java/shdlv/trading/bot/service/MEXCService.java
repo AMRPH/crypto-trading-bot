@@ -58,7 +58,7 @@ public class MEXCService {
                 "/api/v3/klines" +
                 "?symbol=" + symbol +
                 "&interval=" + "1m" +
-                "&limit=" + "720";
+                "&limit=" + "1000";
 
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest httpRequest = HttpRequest.newBuilder()
