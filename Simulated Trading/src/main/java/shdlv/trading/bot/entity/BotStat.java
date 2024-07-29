@@ -7,15 +7,14 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "bots_stats")
+@Table(name = "simulated_stats")
 @Data
 public class BotStat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     long id;
 
-    @JsonFormat(pattern="dd.MM.yyyy HH:mm:ss")
-    private LocalDateTime date;
+    String date;
 
     String name;
 
@@ -26,4 +25,5 @@ public class BotStat {
     int sizeorderlist;
 
     double deposit;
+
 }

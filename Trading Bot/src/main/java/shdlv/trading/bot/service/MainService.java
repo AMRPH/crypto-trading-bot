@@ -24,7 +24,7 @@ public class MainService {
 
     @Async
     @Scheduled(fixedRate = 1000L)
-    public void work() throws InterruptedException {
+    public void work(){
         if (bots == null){
             initBots();
         }
@@ -35,7 +35,7 @@ public class MainService {
     }
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")
-    public void checkProfit(){
+    public void saveData(){
         LocalDateTime date = LocalDateTime.now();
         for (Bot bot : bots) {
             BotStat botStat = new BotStat();
@@ -43,7 +43,8 @@ public class MainService {
             botStat.setName(bot.name);
             botStat.setProfit(bot.profit);
             botStat.setTrades(bot.tradeCount);
-            botStat.setMaxsizeorders(bot.maxSizeOrderList);
+            botStat.setSizeorderlist(bot.orderList.size());
+            botStat.setDeposit(bot.deposit);
             botsStatRepository.save(botStat);
 
             bot.resetInfo();
@@ -51,7 +52,8 @@ public class MainService {
     }
 
     private void initBots(){
-        bots = new Bot[]{new Bot(0.003, 0.005),
+        bots = new Bot[]{
+                new Bot(0.003, 0.005),
                 new Bot(0.003, 0.01),
                 new Bot(0.003, 0.02),
                 new Bot(0.003, 0.02),
@@ -63,6 +65,7 @@ public class MainService {
                 new Bot(0.01, 0.01),
                 new Bot(0.01, 0.02),
                 new Bot(0.01, 0.03),
+                new Bot(0.02, 0.005),
                 new Bot(0.02, 0.01),
                 new Bot(0.02, 0.02),
                 new Bot(0.02, 0.03)};

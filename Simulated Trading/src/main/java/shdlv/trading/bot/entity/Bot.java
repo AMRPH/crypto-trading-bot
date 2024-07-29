@@ -45,7 +45,7 @@ public class Bot {
 
         this.name = "BOT_" + profitPercent + "_" + dropPercent;
 
-        this.sleepCount = 10;
+        this.sleepCount = 0;
         this.lastPriceBuy = 0;
         this.tradeCount = 0;
         this.profit = 0;
