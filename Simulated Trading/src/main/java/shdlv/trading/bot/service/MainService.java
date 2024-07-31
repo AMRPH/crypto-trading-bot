@@ -24,39 +24,75 @@ public class MainService implements ApplicationRunner {
     private BotsStatRepository botsStatRepository;
 
     @Value("classpath:/btc_history_prepared.csv")
-    private Resource resource;
+    private Resource btc;
+
+    @Value("classpath:/kaspa_history.csv")
+    private Resource kas;
+
+    boolean btcOrKas = true;
+    int minuteCount = 0;
 
     Bot[] bots;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        botsStatRepository.deleteAll();
-        try {
-            Random random = new Random();
-            String line;
-            BufferedReader br = new BufferedReader(new InputStreamReader(resource.getInputStream()));
-            br.readLine();
-            while ((line = br.readLine()) != null) {
-                String[] row = line.split(",");
-                String date = row[2];
-                double open = Double.parseDouble(row[3]);
-                double high = Double.parseDouble(row[4]);
-                double low = Double.parseDouble(row[5]);
-                work(open);
-                if (random.nextBoolean()){
-                    work(high);
-                    work(low);
-                } else {
-                    work(low);
-                    work(high);
+//        botsStatRepository.deleteAll();
+        if (btcOrKas){
+            try {
+                Random random = new Random();
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(btc.getInputStream()));
+                br.readLine();
+                while ((line = br.readLine()) != null) {
+                    String[] row = line.split(",");
+                    String date = row[2];
+                    double open = Double.parseDouble(row[3]);
+                    double high = Double.parseDouble(row[4]);
+                    double low = Double.parseDouble(row[5]);
+                    work(open);
+                    if (random.nextBoolean()){
+                        work(high);
+                        work(low);
+                    } else {
+                        work(low);
+                        work(high);
+                    }
+                    if (date.contains("23:59:00")){
+                        System.out.println(date);
+                        saveData(date);
+                    }
                 }
-                if (date.contains("00:00:00")){
-                    System.out.println(date);
-                    saveData(date);
-                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
             }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+        } else {
+            try {
+                Random random = new Random();
+                String line;
+                BufferedReader br = new BufferedReader(new InputStreamReader(kas.getInputStream()));
+                br.readLine();
+                while ((line = br.readLine()) != null) {
+                    minuteCount += 1;
+                    String[] row = line.split(",");
+                    double open = Double.parseDouble(row[1]);
+                    double high = Double.parseDouble(row[2]);
+                    double low = Double.parseDouble(row[3]);
+                    work(open);
+                    if (random.nextBoolean()){
+                        work(high);
+                        work(low);
+                    } else {
+                        work(low);
+                        work(high);
+                    }
+                    if (minuteCount % 1440 == 0){
+                        System.out.println(minuteCount / 1440);
+                        saveData(String.valueOf(minuteCount / 1440));
+                    }
+                }
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -88,21 +124,17 @@ public class MainService implements ApplicationRunner {
 
     private void initBots(){
         bots = new Bot[]{
+                new Bot(0.001, 0.001),
+                new Bot(0.002, 0.001),
                 new Bot(0.003, 0.005),
                 new Bot(0.003, 0.01),
-                new Bot(0.003, 0.02),
-                new Bot(0.003, 0.02),
+//                new Bot(0.003, 0.02),
+//                new Bot(0.003, 0.03),
                 new Bot(0.005, 0.005),
-                new Bot(0.005, 0.01),
-                new Bot(0.005, 0.02),
-                new Bot(0.005, 0.03),
-                new Bot(0.01, 0.005),
-                new Bot(0.01, 0.01),
-                new Bot(0.01, 0.02),
-                new Bot(0.01, 0.03),
-                new Bot(0.02, 0.005),
-                new Bot(0.02, 0.01),
-                new Bot(0.02, 0.02),
-                new Bot(0.02, 0.03)};
+//                new Bot(0.005, 0.01),
+                new Bot(0.01, 0.005)};
+//                new Bot(0.01, 0.01),
+//                new Bot(0.01, 0.02),
+//                new Bot(0.02, 0.02)};
     }
 }

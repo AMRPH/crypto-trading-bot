@@ -36,6 +36,7 @@ public class MainService {
 
     @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")
     public void saveData(){
+        System.out.println("save_data");
         LocalDateTime date = LocalDateTime.now();
         for (Bot bot : bots) {
             BotStat botStat = new BotStat();

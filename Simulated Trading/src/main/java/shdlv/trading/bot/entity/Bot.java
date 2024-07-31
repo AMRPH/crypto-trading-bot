@@ -14,6 +14,10 @@ public class Bot {
     public double deposit;
 
 
+    double initDeposit;
+    boolean soft = true;
+    boolean reinvestment = true;
+
     int sleepCount;
     double lastPriceBuy;
     public int tradeCount;
@@ -24,8 +28,9 @@ public class Bot {
         this.profitPercent = profitPercent;
         this.dropPercent = dropPercent;
         this.sleepTime = 0;
+        this.initDeposit = 10000;
+        this.deposit = initDeposit;
         this.amount = 500;
-        this.deposit = 10000;
 
         this.name = "BOT_" + profitPercent + "_" + dropPercent;
 
@@ -41,7 +46,8 @@ public class Bot {
         this.dropPercent = dropPercent;
         this.sleepTime = sleepTimeSec;
         this.amount = amount;
-        this.deposit = deposit;
+        this.initDeposit = deposit;
+        this.deposit = initDeposit;
 
         this.name = "BOT_" + profitPercent + "_" + dropPercent;
 
@@ -85,27 +91,59 @@ public class Bot {
     }
 
     private void buy(double price){
+        if (soft){
+            double amountSoft = amount;
+            if ((deposit/initDeposit) <= 0.5){
+                amountSoft = amount/2;
+            }
+            if ((deposit/initDeposit) <= 0.25){
+                amountSoft = amount/4;
+            }
+            if ((deposit/initDeposit) <= 0.125){
+                amountSoft = amount/8;
+            }
+            if (deposit - amountSoft >= 0 && amountSoft >= 10){
+                deposit -= amountSoft;
+
+                double quantity = amountSoft/price;
+
+                Order order = new Order();
+                order.setPriceBuy(price);
+                order.setAmountBuy(amountSoft);
+                order.setPriceSell(price*(1 + profitPercent));
+                order.setQuantity(quantity);
+                orderList.add(order);
+            }
+
+        } else {
         if (deposit - amount >= 0){
             deposit -= amount;
-            double quantity = amount/price;
 
-            Order order = new Order();
-            order.setPriceBuy(price);
-            order.setPriceSell(price*(1 + profitPercent));
-            order.setQuantity(quantity);
-            orderList.add(order);
+                double quantity = amount/price;
+
+                Order order = new Order();
+                order.setPriceBuy(price);
+                order.setAmountBuy(amount);
+                order.setPriceSell(price*(1 + profitPercent));
+                order.setQuantity(quantity);
+                orderList.add(order);
+            }
         }
     }
 
     private void sell(Order order){
         double profitAmount = order.getQuantity() * order.getPriceSell();
-        deposit += profitAmount;
-        profit += profitAmount - amount;
+        if (reinvestment){
+            deposit += profitAmount;
+            initDeposit += profitAmount - order.getAmountBuy();
+        } else {
+            deposit += order.getAmountBuy();
+        }
+        profit += profitAmount - order.getAmountBuy();
         tradeCount += 1;
     }
 
     public void resetInfo(){
         tradeCount = 0;
-        profit = 0;
     }
 }
