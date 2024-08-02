@@ -29,7 +29,7 @@ public class MainService implements ApplicationRunner {
     @Value("classpath:/kaspa_history.csv")
     private Resource kas;
 
-    boolean btcOrKas = true;
+    boolean btcOrKas = false;
     int minuteCount = 0;
 
     Bot[] bots;
@@ -74,9 +74,9 @@ public class MainService implements ApplicationRunner {
                 while ((line = br.readLine()) != null) {
                     minuteCount += 1;
                     String[] row = line.split(",");
-                    double open = Double.parseDouble(row[1]);
-                    double high = Double.parseDouble(row[2]);
-                    double low = Double.parseDouble(row[3]);
+                    double open = Double.parseDouble(row[2]);
+                    double high = Double.parseDouble(row[3]);
+                    double low = Double.parseDouble(row[4]);
                     work(open);
                     if (random.nextBoolean()){
                         work(high);
@@ -128,13 +128,13 @@ public class MainService implements ApplicationRunner {
                 new Bot(0.002, 0.001),
                 new Bot(0.003, 0.005),
                 new Bot(0.003, 0.01),
-//                new Bot(0.003, 0.02),
-//                new Bot(0.003, 0.03),
+                new Bot(0.003, 0.02),
+                new Bot(0.003, 0.03),
                 new Bot(0.005, 0.005),
-//                new Bot(0.005, 0.01),
-                new Bot(0.01, 0.005)};
-//                new Bot(0.01, 0.01),
-//                new Bot(0.01, 0.02),
-//                new Bot(0.02, 0.02)};
+                new Bot(0.005, 0.01),
+                new Bot(0.01, 0.005),
+                new Bot(0.01, 0.01),
+                new Bot(0.01, 0.02),
+                new Bot(0.02, 0.02)};
     }
 }

@@ -72,6 +72,14 @@
 			<artifactId>hypersistence-utils-hibernate-63</artifactId>
 			<version>3.7.3</version>
 		</dependency>
+
+		<dependency>
+			<groupId>mexc</groupId>
+			<artifactId>core</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
+
 	</dependencies>
 
 	<build>

@@ -5,11 +5,39 @@ import lombok.Data;
 @Data
 public class Order {
 
-    double priceBuy;
+    String symbol;
 
-    double amountBuy;
+    String orderId;
 
-    double priceSell;
+    Integer orderListId;
 
-    double quantity;
+    String clientOrderId;
+
+    String price;
+
+    String origQty;
+
+    String executedQty;
+
+    String cummulativeQuoteQty;
+
+    String status;
+
+    String timeInForce;
+
+    String type;
+
+    String side;
+
+    String stopPrice;
+
+    String icebergQty;
+
+    Long time;
+
+    Long updateTime;
+
+    Boolean isWorking;
+
+    String origQuoteOrderQty;
 }

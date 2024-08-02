@@ -7,54 +7,37 @@ public class Bot {
     //parameters
 
     public String name;
-    double profitPercent;
-    double dropPercent;
+    Double profitPercent;
+    Double dropPercent;
     long sleepTime;
-    double amount;
+    Double amount;
     public double deposit;
 
 
-    double initDeposit;
-    boolean soft = true;
+    Double initDeposit;
+    boolean soft = false;
     boolean reinvestment = true;
 
     int sleepCount;
-    double lastPriceBuy;
+    Double lastPriceBuy;
     public int tradeCount;
-    public double profit;
+    public Double profit;
     public List<Order> orderList;
 
     public Bot(double profitPercent, double dropPercent){
         this.profitPercent = profitPercent;
         this.dropPercent = dropPercent;
         this.sleepTime = 0;
-        this.initDeposit = 10000;
-        this.deposit = initDeposit;
-        this.amount = 500;
+        this.initDeposit = 1000.0;
+        this.deposit = 1000.0;
+        this.amount = 100.0;
 
         this.name = "BOT_" + profitPercent + "_" + dropPercent;
 
         this.sleepCount = 0;
-        this.lastPriceBuy = 0;
+        this.lastPriceBuy = 0.0;
         this.tradeCount = 0;
-        this.profit = 0;
-        this.orderList = new ArrayList<>();
-    }
-
-    public Bot(double profitPercent, double dropPercent, long sleepTimeSec, double amount, double deposit){
-        this.profitPercent = profitPercent;
-        this.dropPercent = dropPercent;
-        this.sleepTime = sleepTimeSec;
-        this.amount = amount;
-        this.initDeposit = deposit;
-        this.deposit = initDeposit;
-
-        this.name = "BOT_" + profitPercent + "_" + dropPercent;
-
-        this.sleepCount = 0;
-        this.lastPriceBuy = 0;
-        this.tradeCount = 0;
-        this.profit = 0;
+        this.profit = 0.0;
         this.orderList = new ArrayList<>();
     }
 
