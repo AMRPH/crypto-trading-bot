@@ -14,7 +14,12 @@ import shdlv.trading.bot.repository.BotsStatRepository;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -30,13 +35,12 @@ public class MainService implements ApplicationRunner {
     private Resource kas;
 
     boolean btcOrKas = false;
-    int minuteCount = 0;
 
-    Bot[] bots;
+    List<Bot> bots;
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-//        botsStatRepository.deleteAll();
+        botsStatRepository.deleteAll();
         if (btcOrKas){
             try {
                 Random random = new Random();
@@ -67,27 +71,37 @@ public class MainService implements ApplicationRunner {
             }
         } else {
             try {
+                Boolean flag = false;
                 Random random = new Random();
                 String line;
                 BufferedReader br = new BufferedReader(new InputStreamReader(kas.getInputStream()));
                 br.readLine();
                 while ((line = br.readLine()) != null) {
-                    minuteCount += 1;
                     String[] row = line.split(",");
-                    double open = Double.parseDouble(row[2]);
-                    double high = Double.parseDouble(row[3]);
-                    double low = Double.parseDouble(row[4]);
-                    work(open);
-                    if (random.nextBoolean()){
-                        work(high);
-                        work(low);
-                    } else {
-                        work(low);
-                        work(high);
+
+                    Format format = new SimpleDateFormat("yyyy MM dd HH:mm:ss");
+                    String date = format.format(new Date(Long.parseLong(row[1])));
+                    if (date.equals("2023 08 03 00:00:00")){
+                        flag = true;
                     }
-                    if (minuteCount % 1440 == 0){
-                        System.out.println(minuteCount / 1440);
-                        saveData(String.valueOf(minuteCount / 1440));
+
+                    if (flag){
+                        double open = Double.parseDouble(row[2]);
+                        double high = Double.parseDouble(row[3]);
+                        double low = Double.parseDouble(row[4]);
+                        work(open);
+                        if (random.nextBoolean()){
+                            work(high);
+                            work(low);
+                        } else {
+                            work(low);
+                            work(high);
+                        }
+
+                        if (date.contains("00:00:00")){
+                            System.out.println(date);
+                            saveData(date);
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -100,10 +114,10 @@ public class MainService implements ApplicationRunner {
         if (bots == null){
             initBots();
         }
-        for (int i = 0; i < bots.length; i ++) {
-            Bot bot = bots[i];
+        for (int i = 0; i < bots.size(); i++) {
+            Bot bot = bots.get(i);
             bot.work(price);
-            bots[i] = bot;
+            bots.set(i, bot);
         }
     }
 
@@ -114,7 +128,7 @@ public class MainService implements ApplicationRunner {
             botStat.setName(bot.name);
             botStat.setProfit(bot.profit);
             botStat.setTrades(bot.tradeCount);
-            botStat.setSizeorderlist(bot.orderList.size());
+            botStat.setSizeorderlist(bot.maxsizeorderslist);
             botStat.setDeposit(bot.deposit);
             botsStatRepository.save(botStat);
 
@@ -123,18 +137,16 @@ public class MainService implements ApplicationRunner {
     }
 
     private void initBots(){
-        bots = new Bot[]{
-                new Bot(0.001, 0.001),
-                new Bot(0.002, 0.001),
-                new Bot(0.003, 0.005),
-                new Bot(0.003, 0.01),
-                new Bot(0.003, 0.02),
-                new Bot(0.003, 0.03),
-                new Bot(0.005, 0.005),
-                new Bot(0.005, 0.01),
-                new Bot(0.01, 0.005),
-                new Bot(0.01, 0.01),
-                new Bot(0.01, 0.02),
-                new Bot(0.02, 0.02)};
+        bots = new ArrayList<>();
+        List<Double> profitList = List.of(0.003, 0.005, 0.01, 0.03);
+        List<Double> dropList = List.of(0.001, 0.003, 0.005, 0.01, 0.03);
+        List<Integer> partList = List.of(20, 30, 40, 50);
+        for (Double profit : profitList){
+            for (Double drop : dropList){
+                for (Integer part : partList){
+                    bots.add(new Bot(profit, drop, part));
+                }
+            }
+        }
     }
 }

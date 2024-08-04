@@ -20,7 +20,7 @@ public class KaspaHistoryService {
     @Autowired
     private KaspaHistoryRepository kaspaHistoryRepository;
 
-//    @PostConstruct
+    @PostConstruct
     public void start(){
         Long startTime = getStartTime();
         Long endTime = (new Timestamp(System.currentTimeMillis())).getTime();
@@ -36,6 +36,7 @@ public class KaspaHistoryService {
 
     private Long getStartTime(){
         Long time = kaspaHistoryRepository.getStartTime();
+//        Long time = 1679097600000L;
         return time - 3600000L*24;
     }
 }

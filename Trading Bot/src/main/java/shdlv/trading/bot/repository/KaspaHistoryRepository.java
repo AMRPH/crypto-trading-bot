@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface KaspaHistoryRepository extends JpaRepository<Kline, Long>{
 
-    @Query("SELECT k.timeOpen FROM Kline k ORDER BY k.timeOpen DESC LIMIT 1")
+    @Query("SELECT k.timeClose FROM Kline k ORDER BY k.timeClose DESC LIMIT 1")
     Long getStartTime();
 }

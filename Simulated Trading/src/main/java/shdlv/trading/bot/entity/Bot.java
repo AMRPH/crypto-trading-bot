@@ -9,7 +9,6 @@ public class Bot {
     public String name;
     Double profitPercent;
     Double dropPercent;
-    long sleepTime;
     Double amount;
     public double deposit;
 
@@ -18,39 +17,34 @@ public class Bot {
     boolean soft = false;
     boolean reinvestment = true;
 
-    int sleepCount;
+
     Double lastPriceBuy;
     public int tradeCount;
+
+    public int maxsizeorderslist;
     public Double profit;
     public List<Order> orderList;
 
-    public Bot(double profitPercent, double dropPercent){
+    public Bot(double profitPercent, double dropPercent, double part){
         this.profitPercent = profitPercent;
         this.dropPercent = dropPercent;
-        this.sleepTime = 0;
-        this.initDeposit = 1000.0;
-        this.deposit = 1000.0;
-        this.amount = 100.0;
+        this.initDeposit = 10000.0;
+        this.deposit = initDeposit;
+        this.amount = deposit/part;
 
-        this.name = "BOT_" + profitPercent + "_" + dropPercent;
+        this.name = "BOT_" + profitPercent + "_" + dropPercent + "_" + part;
 
-        this.sleepCount = 0;
         this.lastPriceBuy = 0.0;
         this.tradeCount = 0;
         this.profit = 0.0;
+        this.maxsizeorderslist = 0;
         this.orderList = new ArrayList<>();
     }
 
     public void work(double price) {
         if (orderList.isEmpty()){
-            if (sleepCount != sleepTime){
-                sleepCount += 1;
-            } else {
-                buy(price);
-                lastPriceBuy = price;
-
-                sleepCount = 0;
-            }
+            buy(price);
+            lastPriceBuy = price;
         } else {
             if ((price - lastPriceBuy) / lastPriceBuy <= -dropPercent){
                 buy(price);
@@ -71,6 +65,8 @@ public class Bot {
                         .getMin();
             }
         }
+
+        maxsizeorderslist = Math.max(maxsizeorderslist, orderList.size());
     }
 
     private void buy(double price){
@@ -99,8 +95,8 @@ public class Bot {
             }
 
         } else {
-        if (deposit - amount >= 0){
-            deposit -= amount;
+            if (deposit - amount >= 0){
+                deposit -= amount;
 
                 double quantity = amount/price;
 
@@ -128,5 +124,7 @@ public class Bot {
 
     public void resetInfo(){
         tradeCount = 0;
+        profit = 0.0;
+        maxsizeorderslist = 0;
     }
 }

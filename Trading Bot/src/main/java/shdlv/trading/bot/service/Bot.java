@@ -128,7 +128,7 @@ public class Bot {
     }
 
 
-    @Scheduled(fixedRate = 500L)
+//    @Scheduled(fixedRate = 500L)
     public void start(){
         if (name == null || profitPercent == null ||
                 dropPercent == null || sleepTime == null ||
@@ -141,7 +141,7 @@ public class Bot {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")
+//    @Scheduled(cron = "0 0 0 * * *", zone = "Europe/Moscow")
     public void saveData(){
         System.out.println("save_data");
         LocalDateTime date = LocalDateTime.now();
