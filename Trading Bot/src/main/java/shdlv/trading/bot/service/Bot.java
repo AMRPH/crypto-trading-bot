@@ -94,8 +94,8 @@ public class Bot {
 
     private void buy(Double price){
         if (deposit - amount >= 0){
-            mexcService.buyOrder("KASUSDT", amount);
-            mexcService.sellOrder("KASUSDT", amount/price, price*(1 + profitPercent));
+//            mexcService.buyOrder("KASUSDT", amount);
+//            mexcService.sellOrder("KASUSDT", amount/price, price*(1 + profitPercent));
             deposit -= amount;
 
             double quantity = amount/price;

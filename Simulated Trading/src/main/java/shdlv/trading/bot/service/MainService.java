@@ -40,7 +40,8 @@ public class MainService implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        botsStatRepository.deleteAll();
+//        botsStatRepository.deleteAll();
+        initBots();
         if (btcOrKas){
             try {
                 Random random = new Random();
@@ -102,6 +103,10 @@ public class MainService implements ApplicationRunner {
                             System.out.println(date);
                             saveData(date);
                         }
+
+                        if (date.contains("01 00:00:00")){
+                            updateBots();
+                        }
                     }
                 }
             } catch (IOException e) {
@@ -111,17 +116,12 @@ public class MainService implements ApplicationRunner {
     }
 
     public void work(double price) throws InterruptedException {
-        if (bots == null){
-            initBots();
-        }
-        for (int i = 0; i < bots.size(); i++) {
-            Bot bot = bots.get(i);
+        for (Bot bot : bots) {
             bot.work(price);
-            bots.set(i, bot);
         }
     }
 
-    public void saveData(String date){;
+    public void saveData(String date){
         for (Bot bot : bots) {
             BotStat botStat = new BotStat();
             botStat.setDate(date);
@@ -136,11 +136,17 @@ public class MainService implements ApplicationRunner {
         }
     }
 
+    public void updateBots(){
+        for (Bot bot : bots) {
+            bot.updateAmount();
+        }
+    }
+
     private void initBots(){
         bots = new ArrayList<>();
-        List<Double> profitList = List.of(0.003, 0.005, 0.01, 0.03);
-        List<Double> dropList = List.of(0.001, 0.003, 0.005, 0.01, 0.03);
-        List<Integer> partList = List.of(20, 30, 40, 50);
+        List<Double> profitList = List.of(0.003, 0.005, 0.01, 0.02, 0.03);
+        List<Double> dropList = List.of(0.001, 0.003, 0.005, 0.01, 0.02, 0.03);
+        List<Integer> partList = List.of(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
         for (Double profit : profitList){
             for (Double drop : dropList){
                 for (Integer part : partList){

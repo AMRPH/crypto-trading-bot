@@ -2,6 +2,9 @@ package shdlv.trading.bot.service;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.ApplicationListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import shdlv.trading.bot.entity.Kline;
@@ -12,7 +15,7 @@ import java.util.Arrays;
 import java.util.Date;
 
 @Service
-public class KaspaHistoryService {
+public class KaspaHistoryService implements ApplicationRunner {
 
     @Autowired
     private MEXCService mexcService;
@@ -20,8 +23,14 @@ public class KaspaHistoryService {
     @Autowired
     private KaspaHistoryRepository kaspaHistoryRepository;
 
-    @PostConstruct
-    public void start(){
+    private Long getStartTime(){
+        Long time = kaspaHistoryRepository.getStartTime();
+//        Long time = 1679097600000L;
+        return time - 3600000L*24;
+    }
+
+    @Override
+    public void run(ApplicationArguments args){
         Long startTime = getStartTime();
         Long endTime = (new Timestamp(System.currentTimeMillis())).getTime();
         Long peroid = 3600000L*6L;
@@ -32,11 +41,5 @@ public class KaspaHistoryService {
             }
             System.out.println(new Date(time));
         }
-    }
-
-    private Long getStartTime(){
-        Long time = kaspaHistoryRepository.getStartTime();
-//        Long time = 1679097600000L;
-        return time - 3600000L*24;
     }
 }

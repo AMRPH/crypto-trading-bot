@@ -11,28 +11,29 @@ public class Bot {
     Double dropPercent;
     Double amount;
     public double deposit;
+    int part;
 
 
     Double initDeposit;
-    boolean soft = false;
     boolean reinvestment = true;
+    boolean dynamicalAmount = true;
 
 
     Double lastPriceBuy;
     public int tradeCount;
-
     public int maxsizeorderslist;
     public Double profit;
     public List<Order> orderList;
 
-    public Bot(double profitPercent, double dropPercent, double part){
+    public Bot(double profitPercent, double dropPercent, int part){
         this.profitPercent = profitPercent;
         this.dropPercent = dropPercent;
+        this.part = part;
         this.initDeposit = 10000.0;
         this.deposit = initDeposit;
         this.amount = deposit/part;
 
-        this.name = "BOT_" + profitPercent + "_" + dropPercent + "_" + part;
+        this.name = "BOT_" + (profitPercent*100) + "%_" + (dropPercent*100) + "%_" + part;
 
         this.lastPriceBuy = 0.0;
         this.tradeCount = 0;
@@ -41,18 +42,20 @@ public class Bot {
         this.orderList = new ArrayList<>();
     }
 
-    public void work(double price) {
+    public void work(double currentPrice) {
         if (orderList.isEmpty()){
-            buy(price);
-            lastPriceBuy = price;
+            buy(currentPrice);
+            lastPriceBuy = currentPrice;
         } else {
-            if ((price - lastPriceBuy) / lastPriceBuy <= -dropPercent){
-                buy(price);
-                lastPriceBuy = price;
+            if ((currentPrice - lastPriceBuy) / lastPriceBuy <= -dropPercent){
+                while (lastPriceBuy * (1-dropPercent) >= currentPrice){
+                    lastPriceBuy = lastPriceBuy * (1-dropPercent);
+                    buy(lastPriceBuy);
+                }
             } else {
                 List<Order> removeOrders = new ArrayList<>();
                 for (Order order : orderList){
-                    if (order.getPriceSell() <= price){
+                    if (order.getPriceSell() <= currentPrice){
                         sell(order);
                         removeOrders.add(order);
                     }
@@ -70,43 +73,17 @@ public class Bot {
     }
 
     private void buy(double price){
-        if (soft){
-            double amountSoft = amount;
-            if ((deposit/initDeposit) <= 0.5){
-                amountSoft = amount/2;
-            }
-            if ((deposit/initDeposit) <= 0.25){
-                amountSoft = amount/4;
-            }
-            if ((deposit/initDeposit) <= 0.125){
-                amountSoft = amount/8;
-            }
-            if (deposit - amountSoft >= 0 && amountSoft >= 10){
-                deposit -= amountSoft;
+        if (deposit - amount >= 0){
+            deposit -= amount;
 
-                double quantity = amountSoft/price;
+            double quantity = amount/price;
 
-                Order order = new Order();
-                order.setPriceBuy(price);
-                order.setAmountBuy(amountSoft);
-                order.setPriceSell(price*(1 + profitPercent));
-                order.setQuantity(quantity);
-                orderList.add(order);
-            }
-
-        } else {
-            if (deposit - amount >= 0){
-                deposit -= amount;
-
-                double quantity = amount/price;
-
-                Order order = new Order();
-                order.setPriceBuy(price);
-                order.setAmountBuy(amount);
-                order.setPriceSell(price*(1 + profitPercent));
-                order.setQuantity(quantity);
-                orderList.add(order);
-            }
+            Order order = new Order();
+            order.setPriceBuy(price);
+            order.setAmountBuy(amount);
+            order.setPriceSell(price*(1 + profitPercent));
+            order.setQuantity(quantity);
+            orderList.add(order);
         }
     }
 
@@ -120,6 +97,12 @@ public class Bot {
         }
         profit += profitAmount - order.getAmountBuy();
         tradeCount += 1;
+    }
+
+    public void updateAmount(){
+        if (dynamicalAmount){
+            amount = initDeposit/part;
+        }
     }
 
     public void resetInfo(){
