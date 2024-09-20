@@ -16,7 +16,7 @@ public class Bot {
 
     Double initDeposit;
     boolean reinvestment = true;
-    boolean dynamicalAmount = true;
+    boolean dynamicalAmount = false;
 
 
     Double lastPriceBuy;
@@ -25,11 +25,11 @@ public class Bot {
     public Double profit;
     public List<Order> orderList;
 
-    public Bot(double profitPercent, double dropPercent, int part){
+    public Bot(double profitPercent, double dropPercent, double deposit, int part){
         this.profitPercent = profitPercent;
         this.dropPercent = dropPercent;
         this.part = part;
-        this.initDeposit = 10000.0;
+        this.initDeposit = deposit;
         this.deposit = initDeposit;
         this.amount = deposit/part;
 
@@ -103,6 +103,8 @@ public class Bot {
         if (dynamicalAmount){
             amount = initDeposit/part;
         }
+        deposit -= 150.0;
+        initDeposit -= 150.0;
     }
 
     public void resetInfo(){

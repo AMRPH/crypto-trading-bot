@@ -144,13 +144,16 @@ public class MainService implements ApplicationRunner {
 
     private void initBots(){
         bots = new ArrayList<>();
-        List<Double> profitList = List.of(0.003, 0.005, 0.01, 0.02, 0.03);
-        List<Double> dropList = List.of(0.001, 0.003, 0.005, 0.01, 0.02, 0.03);
-        List<Integer> partList = List.of(10, 20, 30, 40, 50, 60, 70, 80, 90, 100);
+        List<Double> profitList = List.of(0.005);
+        List<Double> dropList = List.of(0.005);
+        List<Double> depositList = List.of(4000.0);
+        List<Integer> partList = List.of(80);
         for (Double profit : profitList){
             for (Double drop : dropList){
-                for (Integer part : partList){
-                    bots.add(new Bot(profit, drop, part));
+                for (Double deposit : depositList){
+                    for (Integer part : partList){
+                        bots.add(new Bot(profit, drop, deposit, part));
+                    }
                 }
             }
         }
